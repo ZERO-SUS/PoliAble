@@ -1,0 +1,75 @@
+# ==========================================
+# PoliAble - .gitignore
+# C++ / CMake / Qt6 / Ninja / MSVC
+# ==========================================
+
+# Build directories
+build/
+build*/
+out/
+bin/
+lib/
+dist/
+
+# Log and diagnostic files
+build_output.txt
+*.log
+
+# C++ / MSVC build artifacts
+*.obj
+*.o
+*.pdb
+*.ilk
+*.idb
+*.exe
+*.dll
+*.lib
+*.exp
+*.so
+*.dylib
+*.a
+
+# CMake artifacts
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CMakeScripts/
+Testing/
+Makefile
+*.cmake.user
+
+# Ninja artifacts
+.ninja_deps
+.ninja_log
+
+# Qt generated files
+moc_*.cpp
+mocs_compilation.cpp
+ui_*.h
+qrc_*.cpp
+*.qmlc
+*.jsc
+.qt/
+*.autosave
+
+# IDE and Editor files
+.vs/
+*.vcxproj.user
+*.sln.docstates
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS artifacts
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Environment & Secrets (precautionary)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
