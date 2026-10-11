@@ -1,75 +1,82 @@
-# ==========================================
-# PoliAble - .gitignore
-# C++ / CMake / Qt6 / Ninja / MSVC
-# ==========================================
+# ==============================================================================
+# PoliAble — .gitignore
+# ==============================================================================
 
-# Build directories
-build/
-build*/
+# Build Output Directories
 out/
+build/
 bin/
-lib/
 dist/
 
-# Log and diagnostic files
-build_output.txt
-*.log
+# Visual Studio & IDE Caches
+.vs/
+.vscode/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.suo
+*.user
 
-# C++ / MSVC build artifacts
-*.obj
-*.o
-*.pdb
-*.ilk
-*.idb
-*.exe
-*.dll
-*.lib
-*.exp
-*.so
-*.dylib
-*.a
-
-# CMake artifacts
+# CMake Caches & Generated Files
 CMakeCache.txt
 CMakeFiles/
-cmake_install.cmake
 CMakeScripts/
 Testing/
 Makefile
-*.cmake.user
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+*.cache*
+*?PoliAble*
 
-# Ninja artifacts
-.ninja_deps
-.ninja_log
+# Compiled Objects & Libraries
+*.obj
+*.o
+*.slo
+*.lo
+*.lib
+*.a
+*.la
+*.lai
 
-# Qt generated files
+# Executables & Debug Artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+*.pdb
+*.ilk
+*.exp
+
+# Qt Generated MOC / RCC / UIC files
+*.moc
 moc_*.cpp
-mocs_compilation.cpp
-ui_*.h
 qrc_*.cpp
-*.qmlc
-*.jsc
-.qt/
-*.autosave
+ui_*.h
+PoliAble_autogen/
 
-# IDE and Editor files
-.vs/
-*.vcxproj.user
-*.sln.docstates
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
+# vcpkg Package Manager
+vcpkg_installed/
 
-# OS artifacts
+# OS Specific
 Thumbs.db
 Desktop.ini
 .DS_Store
 
-# Environment & Secrets (precautionary)
+# Temporary & Log files
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Secrets & Environment Variables (Safety Guard)
 .env
 .env.*
 !.env.example
-*.pem
 *.key
+*.pem
 *.cert
+*.pfx

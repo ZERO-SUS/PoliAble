@@ -1,5 +1,3 @@
 @echo off
-call "E:\Visual_studio\VC\Auxiliary\Build\vcvars64.bat"
-cd /d "%~dp0build"
-cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DQT_NO_PACKAGE_VERSION_CHECK=TRUE -DQT_NO_PACKAGE_VERSION_INCOMPATIBLE_WARNING=TRUE ..
-ninja
+call "E:\Visual_studio\VC\Auxiliary\Build\vcvarsall.bat" x64 >nul 2>&1
+"E:\Visual_studio\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja\ninja.exe" -C out/build/x64-debug %*

@@ -1,0 +1,15 @@
+{
+  "name": "poliable",
+  "version": "0.1.0",
+  "builtin-baseline": "11ace808cc8a3a941f386e33726b992b22ba9e5a",
+  "dependencies": [
+    {
+      "name": "qt6-base",
+      "version>=": "6.0.0"
+    },
+    {
+      "name": "qt6-tools",
+      "version>=": "6.0.0"
+    }
+  ]
+}
