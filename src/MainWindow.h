@@ -10,6 +10,7 @@ class AssetsPanel;
 class PropertiesPanel;
 class ConsolePanel;
 class TimelinePanel;
+class CodePanel;
 class CanvasView;
 class CanvasItem;
 class QComboBox;
@@ -77,6 +78,7 @@ private:
     PropertiesPanel* m_propsPanel      = nullptr;
     ConsolePanel*    m_consolePanel    = nullptr;
     TimelinePanel*   m_timelinePanel   = nullptr;
+    CodePanel*       m_codePanel       = nullptr;
     QComboBox*       m_breakpointCombo = nullptr;
     QLabel*          m_statusSelectionLabel = nullptr;
     QLabel*          m_statusDocLabel       = nullptr;

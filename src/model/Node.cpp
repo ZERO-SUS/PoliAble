@@ -45,4 +45,19 @@ Node* Node::findChild(Id id) const {
     return nullptr;
 }
 
+std::unique_ptr<Node> Node::clone(Id newId) const {
+    auto copy = std::make_unique<Node>(m_type, newId, m_name);
+    copy->transform() = m_transform;
+    copy->style() = m_style;
+    copy->setLayout(m_layout);
+    copy->setComponentId(m_componentId);
+
+    // Recursively clone children (assigning unique sub-ids or offset ids)
+    Id childSubId = newId * 1000 + 1;
+    for (const auto& child : m_children) {
+        copy->addChild(child->clone(childSubId++));
+    }
+    return copy;
+}
+
 } // namespace poliable

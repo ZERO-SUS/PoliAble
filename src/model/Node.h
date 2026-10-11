@@ -19,7 +19,9 @@ enum class NodeType {
     Line,
     Flex,       // Flexbox container
     Grid,       // CSS Grid container
-    Scroll      // Scrollable container
+    Scroll,     // Scrollable container
+    Component,  // Master component definition (Stage 6)
+    Instance    // Component instance (Stage 6)
 };
 
 struct Transform {
@@ -183,6 +185,11 @@ public:
 
     const std::vector<std::unique_ptr<Node>>& children() const { return m_children; }
 
+    uint64_t componentId() const { return m_componentId; }
+    void setComponentId(uint64_t id) { m_componentId = id; }
+
+    std::unique_ptr<Node> clone(Id newId) const;
+
 private:
     Id m_id;
     NodeType m_type;
@@ -192,6 +199,7 @@ private:
     Layout m_layout;
     Node* m_parent = nullptr;
     std::vector<std::unique_ptr<Node>> m_children;
+    uint64_t m_componentId = 0;
 };
 
 } // namespace poliable

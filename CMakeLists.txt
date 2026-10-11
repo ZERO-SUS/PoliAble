@@ -44,7 +44,9 @@ add_library(poliable_core STATIC
     src/model/UndoStack.cpp
     src/model/Serializer.cpp
     src/model/Styling.cpp
+    src/model/Component.cpp
     src/layout/LayoutEngine.cpp
+    src/codegen/CodeGenerator.cpp
 )
 target_include_directories(poliable_core PUBLIC src)
 target_compile_features(poliable_core PRIVATE cxx_std_20)
@@ -59,6 +61,7 @@ if(WITH_QT)
         src/panels/PropertiesPanel.cpp
         src/panels/TimelinePanel.cpp
         src/panels/ConsolePanel.cpp
+        src/panels/CodePanel.cpp
         src/theme/Theme.cpp
         src/canvas/CanvasView.cpp
         src/canvas/CanvasItem.cpp

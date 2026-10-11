@@ -4,6 +4,7 @@
 #include "panels/PropertiesPanel.h"
 #include "panels/TimelinePanel.h"
 #include "panels/ConsolePanel.h"
+#include "panels/CodePanel.h"
 #include "canvas/CanvasView.h"
 #include "canvas/CanvasItem.h"
 #include "theme/Theme.h"
@@ -103,16 +104,19 @@ void MainWindow::buildDocks() {
     bottomTabs->setObjectName("BottomTabs");
     bottomTabs->setTabPosition(QTabWidget::North);
 
+    m_codePanel = new CodePanel(this);
+    m_codePanel->setDocument(m_doc.get());
     m_consolePanel = new ConsolePanel(this);
     m_timelinePanel = new TimelinePanel(this);
 
+    bottomTabs->addTab(m_codePanel, "  Code Generator (HTML/React/Tailwind)  ");
     bottomTabs->addTab(m_consolePanel, "  Console  ");
     bottomTabs->addTab(m_timelinePanel, "  Timeline  ");
 
-    auto* bottomDock = new QDockWidget("Output & Sequencer", this);
+    auto* bottomDock = new QDockWidget("Code Generator & Activity", this);
     bottomDock->setWidget(bottomTabs);
     bottomDock->setObjectName("BottomDock");
-    bottomDock->setMaximumHeight(200);
+    bottomDock->setMaximumHeight(260);
     addDockWidget(Qt::BottomDockWidgetArea, bottomDock);
 }
 
@@ -306,6 +310,19 @@ void MainWindow::connectSignals() {
     // Layout changed in properties panel -> update canvas & layers
     connect(m_propsPanel, &PropertiesPanel::layoutModified,
             this, &MainWindow::onLayoutModified);
+
+    // Live Code Generator sync
+    connect(m_canvas, &CanvasView::nodesChanged,
+            this, [this]() { if (m_codePanel) m_codePanel->refresh(); });
+    connect(m_propsPanel, &PropertiesPanel::layoutModified,
+            this, [this]() { if (m_codePanel) m_codePanel->refresh(); });
+    connect(m_propsPanel, &PropertiesPanel::stylingModified,
+            this, [this]() { if (m_codePanel) m_codePanel->refresh(); });
+    connect(m_codePanel, &CodePanel::projectExported,
+            this, [this](const QString& dir) {
+                logToConsole("Project exported to disk: " + dir);
+                statusBar()->showMessage("Project exported successfully to " + dir, 4000);
+            });
 }
 
 // ── File operations ───────────────────────────────────────────────────────────
@@ -324,6 +341,7 @@ void MainWindow::newDocument() {
     m_canvas->setDocument(m_doc.get());
     m_layersPanel->setDocument(m_doc.get());
     m_propsPanel->setDocument(m_doc.get());
+    if (m_codePanel) m_codePanel->setDocument(m_doc.get());
     updateTitle();
     logToConsole("New document created.");
 }
@@ -386,6 +404,7 @@ void MainWindow::loadFile(const QString& path) {
     m_canvas->setDocument(m_doc.get());
     m_layersPanel->setDocument(m_doc.get());
     m_propsPanel->setDocument(m_doc.get());
+    if (m_codePanel) { m_codePanel->setDocument(m_doc.get()); m_codePanel->refresh(); }
     updateTitle();
     statusBar()->showMessage("Loaded: " + path, 3000);
     logToConsole("Loaded: " + path);

@@ -3,7 +3,10 @@
 #include "model/Command.h"
 #include "model/UndoStack.h"
 #include "model/Serializer.h"
+#include "model/Component.h"
 #include "layout/LayoutEngine.h"
+#include "codegen/CodeGenerator.h"
+#include <filesystem>
 #include <cassert>
 #include <iostream>
 
@@ -581,6 +584,121 @@ void test_responsive_breakpoints() {
     std::cout << "✓ test_responsive_breakpoints passed" << std::endl;
 }
 
+// ===== Component Tests (Stage 6) =====
+void test_component_creation_and_instantiation() {
+    auto comp = std::make_unique<Component>(101, "Button");
+    comp->addVariantProperty({"variant", {"primary", "secondary"}, "primary"});
+    comp->addSlot({"icon", "Button Icon"});
+
+    auto root = std::make_unique<Node>(NodeType::Flex, 1, "ButtonRoot");
+    root->style().fillColor = "#6366f1";
+    root->transform().width = 140;
+    root->transform().height = 40;
+
+    auto label = std::make_unique<Node>(NodeType::Text, 2, "Label");
+    label->style().textContent = "Submit";
+    root->addChild(std::move(label));
+
+    comp->setTemplateRoot(std::move(root));
+
+    assert(comp->name() == "Button");
+    assert(comp->variantProperties().size() == 1);
+    assert(comp->slots().size() == 1);
+
+    auto instance = comp->instantiate(201);
+    assert(instance != nullptr);
+    assert(instance->componentId() == 101);
+    assert(instance->children().size() == 1);
+    assert(instance->children()[0]->style().textContent == "Submit");
+
+    ComponentManager::instance().registerComponent(std::move(comp));
+    assert(ComponentManager::instance().findByName("Button") != nullptr);
+    assert(ComponentManager::instance().getComponent(101) != nullptr);
+
+    std::cout << "✓ test_component_creation_and_instantiation passed" << std::endl;
+}
+
+// ===== Code Generation Tests (Stage 7) =====
+void test_codegen_html_and_css() {
+    Document doc("TestLandingPage");
+    auto flex = std::make_unique<Node>(NodeType::Flex, doc.nextId(), "Navbar");
+    flex->layout().mode = LayoutMode::Flex;
+    flex->layout().flexDirection = FlexDirection::Row;
+    flex->layout().justifyContent = JustifyContent::SpaceBetween;
+    flex->layout().gap = 16.0;
+
+    auto text = std::make_unique<Node>(NodeType::Text, doc.nextId(), "Brand");
+    text->style().textContent = "PoliAble";
+    flex->addChild(std::move(text));
+    doc.addChild(0, std::move(flex));
+
+    std::string html = CodeGenerator::generateHtml(doc);
+    assert(html.find("<!DOCTYPE html>") != std::string::npos);
+    assert(html.find("PoliAble") != std::string::npos);
+
+    std::string css = CodeGenerator::generateCss(doc);
+    assert(css.find("display: flex;") != std::string::npos);
+    assert(css.find("justify-content: space-between;") != std::string::npos);
+    assert(css.find("@media (max-width: 1024px)") != std::string::npos);
+
+    std::cout << "✓ test_codegen_html_and_css passed" << std::endl;
+}
+
+void test_codegen_react_tsx() {
+    Document doc("LandingPage");
+    auto btn = std::make_unique<Node>(NodeType::Flex, doc.nextId(), "PrimaryButton");
+    btn->style().fillColor = "#6366f1";
+    auto text = std::make_unique<Node>(NodeType::Text, doc.nextId(), "BtnText");
+    text->style().textContent = "Sign Up";
+    btn->addChild(std::move(text));
+    doc.addChild(0, std::move(btn));
+
+    std::string tsx = CodeGenerator::generateReactTsx(doc);
+    assert(tsx.find("import React from 'react';") != std::string::npos);
+    assert(tsx.find("export const LandingPage: React.FC") != std::string::npos);
+    assert(tsx.find("Sign Up") != std::string::npos);
+
+    std::cout << "✓ test_codegen_react_tsx passed" << std::endl;
+}
+
+void test_codegen_tailwind() {
+    Document doc("TailwindDoc");
+    auto flex = std::make_unique<Node>(NodeType::Flex, doc.nextId(), "FeatureCard");
+    flex->layout().mode = LayoutMode::Flex;
+    flex->layout().flexDirection = FlexDirection::Column;
+    flex->layout().gap = 16.0;
+    flex->layout().paddingLeft = 16.0;
+    flex->style().cornerRadius = 8.0;
+    flex->style().fillColor = "#6366f1";
+    doc.addChild(0, std::move(flex));
+
+    std::string twHtml = CodeGenerator::generateTailwindHtml(doc);
+    assert(twHtml.find("cdn.tailwindcss.com") != std::string::npos);
+    assert(twHtml.find("flex") != std::string::npos);
+    assert(twHtml.find("flex-col") != std::string::npos);
+    assert(twHtml.find("rounded-lg") != std::string::npos);
+
+    std::cout << "✓ test_codegen_tailwind passed" << std::endl;
+}
+
+void test_codegen_export_project() {
+    Document doc("ExportTestDoc");
+    auto card = std::make_unique<Node>(NodeType::Rectangle, doc.nextId(), "Card");
+    card->transform().width = 200;
+    card->transform().height = 100;
+    card->style().fillColor = "#10b981";
+    doc.addChild(0, std::move(card));
+
+    std::string targetDir = "out/test_export_project";
+    std::string err;
+    bool ok = CodeGenerator::exportProject(doc, targetDir, ExportFormat::HtmlCss, err);
+    assert(ok);
+    assert(std::filesystem::exists("out/test_export_project/index.html"));
+    assert(std::filesystem::exists("out/test_export_project/styles.css"));
+
+    std::cout << "✓ test_codegen_export_project passed" << std::endl;
+}
+
 // ===== Main Test Runner =====
 int main() {
     try {
@@ -619,8 +737,17 @@ int main() {
         test_layout_serialization_roundtrip();
         test_responsive_breakpoints();
 
+        std::cout << "\n--- Component System Tests (Stage 6) ---" << std::endl;
+        test_component_creation_and_instantiation();
+
+        std::cout << "\n--- Code Generator Tests (Stage 7) ---" << std::endl;
+        test_codegen_html_and_css();
+        test_codegen_react_tsx();
+        test_codegen_tailwind();
+        test_codegen_export_project();
+
         std::cout << "\n" << std::string(50, '=') << std::endl;
-        std::cout << "✓ ALL TESTS PASSED! (26 total)" << std::endl;
+        std::cout << "✓ ALL TESTS PASSED! (31 total)" << std::endl;
         return 0;
     } catch (const std::exception& e) {
         std::cerr << "\n✗ Test failed: " << e.what() << std::endl;
